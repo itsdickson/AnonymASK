@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "636095521075",
+    "firebase_url": "https://anonymask-ed6b9.firebaseio.com",
+    "project_id": "anonymask-ed6b9",
+    "storage_bucket": "anonymask-ed6b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636095521075:android:4e2235e3a8b2dfaf",
+        "android_client_info": {
+          "package_name": "com.example.dickson.anonymask"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "636095521075-5tn4tgl7jopae1phm5li77vmm8lrvo8i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dickson.anonymask",
+            "certificate_hash": "1ec01343bd7cef1ee7d6588e54d816d8d8d5a14d"
+          }
+        },
+        {
+          "client_id": "636095521075-qjukfrnquslk7c46sjn2b1ae89dc312f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWceWuQ121TTyZuMIT1xwDXQdwg42yF1A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "636095521075-qjukfrnquslk7c46sjn2b1ae89dc312f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

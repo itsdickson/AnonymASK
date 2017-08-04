@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">anonymASK</string>
+
+    <string name="sort_prompt">SORT</string>
+
+    <string-array name="sort_arrays">
+        <item>RECENT</item>
+        <item>TOP</item>
+    </string-array>
+</resources>
