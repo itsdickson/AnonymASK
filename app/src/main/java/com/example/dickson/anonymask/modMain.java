@@ -1,13 +1,19 @@
 package com.example.dickson.anonymask;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,8 +49,8 @@ public class modMain extends AppCompatActivity implements android.widget.Compoun
     private DatabaseReference ref = database.getReference();
 
     private int roomNum;
-    private Button selectBtn;
     private Button removeBtn;
+    private Toolbar modTool;
 
     private ListView lv;
     private ArrayList<Message> messageList; // list of messages
@@ -63,12 +69,91 @@ public class modMain extends AppCompatActivity implements android.widget.Compoun
             roomNum = (int) b.get("roomNum");
         }
 
+        modTool = (Toolbar) findViewById(R.id.modTool);
+        setSupportActionBar(modTool);
+
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(Integer.toString(roomNum));
+
         lv = (ListView) findViewById(R.id.list_of_message);
         displayMessage();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.app_bar_search));
+//        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.removeBtn:
+                final AlertDialog.Builder builder = new AlertDialog.Builder(modMain.this);
+                builder.setMessage("Remove selected message(s)?");
+
+//                        removeBtn.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+
+
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ref.child("Room").child(Integer.toString(roomNum)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(final DataSnapshot dataSnapshot) {
+                                for (DataSnapshot player : dataSnapshot.getChildren()) {
+                                    if ((player.child("checked").getValue()).equals(true)) {
+                                        String tempKey = player.getKey();
+                                        int tempIndex = keyList.indexOf(tempKey);
+                                        System.out.println(tempIndex);
+                                        keyList.remove(tempIndex);
+                                        msgAdapter.remove(messageList.get(tempIndex));
+                                        msgAdapter.notifyDataSetChanged();
+
+//                                Log.i("testing: ", "PASS!");
+                                        player.getRef().removeValue();
+
+                                        for (int i = 0; i < msgAdapter.getCount(); i++) {
+                                            msgAdapter.getItem(i).setChecked(false);
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+
+                        });
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     // Main method that displays the message on the ListView
-    private void displayMessage(){
+    private void displayMessage() {
         messageList = new ArrayList<Message>();
         keyList = new ArrayList<String>();
 
@@ -104,7 +189,7 @@ public class modMain extends AppCompatActivity implements android.widget.Compoun
                 ref.child("Room").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (!dataSnapshot.hasChild(Integer.toString(roomNum))){
+                        if (!dataSnapshot.hasChild(Integer.toString(roomNum))) {
                             System.out.println("Session Ended!");
                             finish();
                         }
@@ -132,58 +217,63 @@ public class modMain extends AppCompatActivity implements android.widget.Compoun
 
         lv.setAdapter(msgAdapter);
 
-        selectBtn = (Button) findViewById(R.id.selectBtn);
         removeBtn = (Button) findViewById(R.id.removeBtn);
-
-        // Select All Button (To Be Removed)
-        // Sets all messages to checked
-        selectBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                for (int i=0; i<keyList.size(); i++){
-                    ref.child("Room").child(Integer.toString(roomNum)).child(keyList.get(i)).child("checked").setValue(true);
-                    Message m = messageList.get(i);
-                    m.setChecked(true);
-                }
-                msgAdapter.notifyDataSetChanged();
-            }
-        });
 
         // Remove Button
         // Checks through the Firebase for checked Message objects and remove them from both
         // Firebase Database and both ArrayLists
-        ref.child("Room").child(Integer.toString(roomNum)).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(final DataSnapshot dataSnapshot) {
-                removeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        for(DataSnapshot player: dataSnapshot.getChildren()){
-                            if ((player.child("checked").getValue()).equals(true)){
-                                String tempKey = player.getKey();
-                                int tempIndex = keyList.indexOf(tempKey);
-                                System.out.println(tempIndex);
-                                keyList.remove(tempIndex);
-                                msgAdapter.remove(messageList.get(tempIndex));
-                                msgAdapter.notifyDataSetChanged();
 
-//                                Log.i("testing: ", "PASS!");
-                                player.getRef().removeValue();
-
-                                for (int i=0; i<msgAdapter.getCount(); i++){
-                                    msgAdapter.getItem(i).setChecked(false);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        ref.child("Room").child(Integer.toString(roomNum)).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(final DataSnapshot dataSnapshot) {
+//                removeBtn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        final AlertDialog.Builder builder = new AlertDialog.Builder(modMain.this);
+//                        builder.setMessage("Remove selected message(s)?");
+//
+//                        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                for (DataSnapshot player : dataSnapshot.getChildren()) {
+//                                    if ((player.child("checked").getValue()).equals(true)) {
+//                                        String tempKey = player.getKey();
+//                                        int tempIndex = keyList.indexOf(tempKey);
+//                                        System.out.println(tempIndex);
+//                                        keyList.remove(tempIndex);
+//                                        msgAdapter.remove(messageList.get(tempIndex));
+//                                        msgAdapter.notifyDataSetChanged();
+//
+////                                Log.i("testing: ", "PASS!");
+//                                        player.getRef().removeValue();
+//
+//                                        for (int i = 0; i < msgAdapter.getCount(); i++) {
+//                                            msgAdapter.getItem(i).setChecked(false);
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        });
+//
+//                        AlertDialog alert = builder.create();
+//                        alert.show();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//
+//        });
     }
 
     // This method overrides the checkbox's behaviours

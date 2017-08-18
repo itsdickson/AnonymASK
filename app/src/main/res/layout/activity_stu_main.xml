@@ -11,10 +11,9 @@
         android:id="@+id/askTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="31dp"
-        android:layout_marginTop="30dp"
+        android:layout_below="@+id/stuTool"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
         android:text="ASK"
         android:textSize="36sp" />
 
@@ -22,39 +21,48 @@
         android:id="@+id/cameraBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_menu_camera"
         android:layout_alignTop="@+id/galleryBtn"
+        android:layout_marginStart="11dp"
         android:layout_toEndOf="@+id/askTxt"
         android:background="@null"
-        android:layout_marginStart="11dp" />
+        android:scaleX="1.6"
+        android:scaleY="1.6"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
 
     <ImageButton
         android:id="@+id/galleryBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/askTxt"
-        android:layout_marginTop="8dp"
+        android:layout_above="@+id/qnET"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="10dp"
         android:layout_toEndOf="@+id/cameraBtn"
         android:background="@null"
+        android:scaleX="1.4"
+        android:scaleY="1.4"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
 
     <EditText
         android:id="@+id/qnET"
-        android:layout_width="305dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/cameraBtn"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="5dp" />
+        android:layout_alignStart="@+id/askTxt"
+        android:layout_below="@+id/askTxt"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
+        android:paddingEnd="50dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="312dp"
-        android:layout_marginTop="75dp"
+        android:layout_alignBottom="@+id/qnET"
+        android:layout_alignEnd="@+id/qnET"
+        android:layout_marginEnd="-10dp"
         android:clickable="true"
+        android:scaleX="1.1"
+        android:scaleY="1.1"
         android:src="@drawable/ic_send"
         android:tint="@android:color/holo_blue_bright"
         app:backgroundTint="@color/cardview_dark_background"
@@ -69,21 +77,37 @@
         android:layout_height="match_parent"
         android:divider="@android:color/transparent"
         android:dividerHeight="10dp"
-        android:layout_below="@+id/qnET"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="25dp"></ListView>
+        android:layout_below="@+id/viewBtn"
+        android:layout_alignParentStart="true"></ListView>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/stuTool"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <!--<android.support.v7.widget.Toolbar-->
+        <!--android:id="@+id/stuTool2"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="35dp"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:minHeight="?attr/actionBarSize"-->
+        <!--android:theme="?attr/actionBarTheme"-->
+        <!--android:layout_below="@+id/qnET"-->
+        <!--android:layout_alignParentStart="true" />-->
 
     <Button
         android:id="@+id/viewBtn"
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:layout_alignStart="@+id/qnET"
-        android:layout_alignTop="@+id/qnET"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="30dp"
         android:background="@null"
         android:textAlignment="viewStart"
-        android:textSize="11sp" />
-
+        android:textSize="14sp"
+        android:layout_below="@+id/qnET"
+        android:layout_alignStart="@+id/qnET" />
 
 </RelativeLayout>

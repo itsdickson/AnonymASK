@@ -1,8 +1,9 @@
 package com.example.dickson.anonymask;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,16 +12,24 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +37,7 @@ import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Gallery;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -95,17 +105,27 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
     private ArrayList<String> keyList; // list of message keys from Firebase
     private CustomAdapter msgAdapter;
 
+    private Toolbar stuTool;
+
+    private ArrayList<Boolean> checkList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stu_main);
 
-        // Retrieving roomNum from lecStart
+        // Retrieving roomNum from stuStart
         Intent myIntent = getIntent();
         Bundle b = myIntent.getExtras();
         if (b != null) {
             roomNum = (int) b.get("roomNum");
         }
+        stuTool = (Toolbar) findViewById(R.id.stuTool);
+        setSupportActionBar(stuTool);
+
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle(Integer.toString(roomNum));
+        ab.setDisplayHomeAsUpEnabled(true);
 
         // Initialising of all the buttons, edittexts, textviews and etc
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -187,6 +207,23 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_stu, menu);
+
+        return true;
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item){
+//        switch (item.getItemId()) {
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
+
+
 //    public String removePunctuations(String s) {
 //        String res = "";
 //        for (Character c : s.toCharArray()) {
@@ -200,6 +237,7 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
     private void displayMessage(){
         messageList = new ArrayList<Message>();
         keyList = new ArrayList<String>();
+        checkList = new ArrayList<Boolean>();
 
         ref.child("Room").child(Integer.toString(roomNum)).addChildEventListener(new ChildEventListener() {
             @Override
@@ -224,6 +262,7 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
                 int tempIdx = keyList.indexOf(dataSnapshot.getKey());
                 keyList.remove(dataSnapshot.getKey());
                 messageList.remove(tempIdx);
+
                 msgAdapter.notifyDataSetChanged();
 
                 // This checks when the lecturer ends the session (removes all questions)
@@ -268,61 +307,46 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
         final int pos = lv.getPositionForView(buttonView);
         final Message temp = messageList.get(pos);
 
-        if (pos != ListView.INVALID_POSITION){
+        if (pos != ListView.INVALID_POSITION) {
             // When the checkbox is checked/unchecked, the corresponding Message object
             // will update the upvote count at Firebase
-            if (isChecked){
-                final AlertDialog.Builder builder = new AlertDialog.Builder(stuMain.this);
-                builder.setMessage("Upvote?");
-                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            if (isChecked) {
+                DatabaseReference postRef = ref.child("Room").child(Integer.toString(roomNum)).child(keyList.get(pos));
+
+                postRef.runTransaction(new Transaction.Handler() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        displayMessage();
-                        dialog.dismiss();
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        Message m = mutableData.getValue(Message.class);
+
+                        if (m == null) {
+                            return Transaction.success(mutableData);
+                        } else {
+                            System.out.println("UPVOTED!");
+                            m.thumbsUp();
+                            temp.thumbsUp();
+                        }
+                        mutableData.setValue(m);
+
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b,
+                                           DataSnapshot dataSnapshot) {
+                        // Transaction completed
+                        msgAdapter.notifyDataSetChanged();
                     }
                 });
-                builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference postRef = ref.child("Room").child(Integer.toString(roomNum)).child(keyList.get(pos));
 
-                        postRef.runTransaction(new Transaction.Handler() {
-                            @Override
-                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                Message m = mutableData.getValue(Message.class);
-
-                                if (m == null) {
-                                    return Transaction.success(mutableData);
-                                } else {
-                                    System.out.println("UPVOTED!");
-                                    m.thumbsUp();
-                                    temp.thumbsUp();
-                                }
-                                mutableData.setValue(m);
-
-                                return Transaction.success(mutableData);
-                            }
-
-                            @Override
-                            public void onComplete(DatabaseError databaseError, boolean b,
-                                                   DataSnapshot dataSnapshot) {
-                                // Transaction completed
-//                                Log.d("TAG", "postTransaction:onComplete:" + databaseError);
-
-                                msgAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
+                Toast.makeText(stuMain.this, "Upvoted!", Toast.LENGTH_SHORT).show();
             }
+
             else {
                 DatabaseReference postRef = ref.child("Room").child(Integer.toString(roomNum)).child(keyList.get(pos));
 
-                postRef.runTransaction(new Transaction.Handler(){
+                postRef.runTransaction(new Transaction.Handler() {
                     @Override
-                    public Transaction.Result doTransaction(MutableData mutableData){
+                    public Transaction.Result doTransaction(MutableData mutableData) {
                         Message m = mutableData.getValue(Message.class);
                         System.out.println(mutableData);
                         if (m == null) {
@@ -340,10 +364,10 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
                     public void onComplete(DatabaseError databaseError, boolean b,
                                            DataSnapshot dataSnapshot) {
                         // Transaction completed
-//                        Log.d("TAG", "postTransaction:onComplete:" + databaseError);
                         msgAdapter.notifyDataSetChanged();
                     }
                 });
+                Toast.makeText(stuMain.this, "Downvoted!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -389,46 +413,65 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
 
     // checks if gallery or the camera function is triggered, and do the according activities
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
 
-            mProgressDialog.setMessage("Uploading...");
-            mProgressDialog.show();
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Upload Image?");
 
-            Uri uri = data.getData();
-
-            StorageReference filepath = mStorage.child("Photos").child(uri.getLastPathSegment());
-
-            // Inputs the image file into Firebase Storage
-            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                 @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(stuMain.this, "Upload Done!", Toast.LENGTH_LONG).show();
-                    mProgressDialog.dismiss();
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, GALLERY_INTENT);
+                    dialog.dismiss();
+                }
+            });
+            builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mProgressDialog.setMessage("Uploading...");
+                    mProgressDialog.show();
 
-                    photoURL = taskSnapshot.getDownloadUrl().toString();
+                    Uri uri = data.getData();
 
-                    viewBtn.setText("View Image");
+                    StorageReference filepath = mStorage.child("Photos").child(uri.getLastPathSegment());
 
-                    viewBtn.setOnClickListener(new View.OnClickListener() {
+                    // Inputs the image file into Firebase Storage
+                    filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
-                        public void onClick(View v) {
-                            if (!photoURL.isEmpty()){
-                                Dialog settingsDialog = new Dialog(stuMain.this);
-                                settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_view, null), new RelativeLayout.LayoutParams(900, 1100));
-                                camPhoto = (ImageView) settingsDialog.findViewById(R.id.camView);
-                                camPhoto.setRotation(camPhoto.getRotation() + 90);
-                                Glide.with(stuMain.this).load(photoURL).into(camPhoto);
-                                settingsDialog.show();
-                            }
-                        }
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(stuMain.this, "Upload Done!", Toast.LENGTH_LONG).show();
+                            mProgressDialog.dismiss();
 
+                            photoURL = taskSnapshot.getDownloadUrl().toString();
+
+                            viewBtn.setText("View Image");
+
+                            viewBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (!photoURL.isEmpty()){
+                                        Dialog settingsDialog = new Dialog(stuMain.this);
+                                        settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                        settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_view, null), new RelativeLayout.LayoutParams(900, 1100));
+                                        camPhoto = (ImageView) settingsDialog.findViewById(R.id.camView);
+//                                        camPhoto.setRotation(camPhoto.getRotation() + 90);
+                                        Glide.with(stuMain.this).load(photoURL).into(camPhoto);
+                                        settingsDialog.show();
+                                    }
+                                }
+
+                            });
+                        }
                     });
                 }
             });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
 
         else if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
@@ -459,7 +502,7 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
                                 settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                                 settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.image_view, null), new RelativeLayout.LayoutParams(900, 1100));
                                 camPhoto = (ImageView) settingsDialog.findViewById(R.id.camView);
-                                camPhoto.setRotation(camPhoto.getRotation() + 90);
+//                                camPhoto.setRotation(camPhoto.getRotation() + 90);
                                 Glide.with(stuMain.this).load(photoURL).into(camPhoto);
                                 settingsDialog.show();
                             }

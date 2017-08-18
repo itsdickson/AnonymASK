@@ -37,26 +37,36 @@
         android:text="TextView"
         android:textSize="30sp" />
 
-    <Button
-        android:id="@+id/endBtn"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
-        android:background="@null"
-        android:text="End"
-        android:textSize="16sp" />
+    <!--<Button-->
+        <!--android:id="@+id/endBtn"-->
+        <!--android:layout_width="70dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:background="@null"-->
+        <!--android:text="End"-->
+        <!--android:textSize="16sp" />-->
 
-    <Button
-        android:id="@+id/sortBtn"
-        android:layout_width="70dp"
+    <!--<Button-->
+        <!--android:id="@+id/sortBtn"-->
+        <!--android:layout_width="70dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignBaseline="@+id/endBtn"-->
+        <!--android:layout_alignBottom="@+id/endBtn"-->
+        <!--android:layout_toStartOf="@+id/endBtn"-->
+        <!--android:background="@null"-->
+        <!--android:text="Sort"-->
+        <!--android:textSize="16sp" />-->
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/lecTool"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/endBtn"
-        android:layout_alignBottom="@+id/endBtn"
-        android:layout_toStartOf="@+id/endBtn"
-        android:background="@null"
-        android:text="Sort"
-        android:textSize="16sp" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
 
 </RelativeLayout>

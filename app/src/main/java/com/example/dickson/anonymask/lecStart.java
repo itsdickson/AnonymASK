@@ -1,8 +1,11 @@
 package com.example.dickson.anonymask;
 
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,20 +25,32 @@ public class lecStart extends AppCompatActivity {
     private int rand;
     private Button genBtn;
     private TextView numText;
+    private TextView codeTxt;
     private ArrayList<Integer> roomArr = new ArrayList<Integer>(); // array list of rooms when room is created
 
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference ref = database.getReference();
+
+    private Toolbar lecTool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lec_start);
 
+        codeTxt = (TextView) findViewById(R.id.codeTxt);
+//        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "impact.ttf");
+//        codeTxt.setTypeface(custom_font);
+
         genBtn = (Button) findViewById(R.id.genBtn);
         numText = (TextView) findViewById(R.id.numText);
         numText.setText("");
 
+        lecTool = (Toolbar) findViewById(R.id.lecTool);
+        setSupportActionBar(lecTool);
+
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
         ref.child("Room").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -82,7 +97,7 @@ public class lecStart extends AppCompatActivity {
                     roomNum = generateRoomNum();
                 }
 
-                numText.setText(Integer.toString(roomNum));
+//                numText.setText(Integer.toString(roomNum));
 
                 // This brings over the room number to lecMain
                 Intent myIntent = new Intent(lecStart.this, lecMain.class);

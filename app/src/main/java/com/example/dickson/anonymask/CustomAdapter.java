@@ -83,6 +83,7 @@ public class CustomAdapter extends ArrayAdapter<Message> {
 
     private List<Message> messageList;
     private Context context;
+    private boolean isVoted;
 
     public CustomAdapter(List<Message> messageList, Context context){
         super(context, R.layout.test1, messageList);
@@ -176,16 +177,15 @@ public class CustomAdapter extends ArrayAdapter<Message> {
             stuHolder.stuView1.setText(m.getMessageText());
             stuHolder.stuView2.setText("" + m.getUpVote());
             System.out.println("upvotes = " + m.getUpVote());
-            stuHolder.stuBox.setButtonDrawable(R.drawable.ic_thumb_up_white_18dp);
+            stuHolder.stuBox.setButtonDrawable(R.drawable.customthumbsup);
+//            stuHolder.stuBox.setChecked(isVoted);
             System.out.println(stuHolder.stuBox.isChecked());
 
             if (stuHolder.stuBox.isChecked()){
-                stuHolder.stuBox.setButtonDrawable(R.drawable.ic_thumb_up_black_18dp);
                 stuHolder.stuView2.setText("" + m.getUpVote());
                 System.out.println("checked = " + m.getUpVote());
             }
             else {
-                stuHolder.stuBox.setButtonDrawable(R.drawable.ic_thumb_up_white_18dp);
                 stuHolder.stuView2.setText("" + m.getUpVote());
                 System.out.println("unchecked = " + m.getUpVote());
             }
@@ -207,7 +207,7 @@ public class CustomAdapter extends ArrayAdapter<Message> {
                         LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         settingsDialog.setContentView(li.inflate(R.layout.image_view, null), new RelativeLayout.LayoutParams(900, 1100));
                         ImageView camPhoto = (ImageView) settingsDialog.findViewById(R.id.camView);
-                        camPhoto.setRotation(camPhoto.getRotation() + 90);
+//                        camPhoto.setRotation(camPhoto.getRotation() + 90);
                         Glide.with(context).load(m.getURL()).into(camPhoto);
                         settingsDialog.show();
                     }
@@ -244,7 +244,7 @@ public class CustomAdapter extends ArrayAdapter<Message> {
                         LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         settingsDialog.setContentView(li.inflate(R.layout.image_view, null), new RelativeLayout.LayoutParams(900, 1100));
                         ImageView camPhoto = (ImageView) settingsDialog.findViewById(R.id.camView);
-                        camPhoto.setRotation(camPhoto.getRotation() + 90);
+//                        camPhoto.setRotation(camPhoto.getRotation() + 90);
                         Glide.with(context).load(m.getURL()).into(camPhoto);
                         settingsDialog.show();
                     }
@@ -278,7 +278,7 @@ public class CustomAdapter extends ArrayAdapter<Message> {
                         LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         settingsDialog.setContentView(li.inflate(R.layout.image_view, null), new RelativeLayout.LayoutParams(900, 1100));
                         ImageView camPhoto = (ImageView) settingsDialog.findViewById(R.id.camView);
-                        camPhoto.setRotation(camPhoto.getRotation() + 90);
+//                        camPhoto.setRotation(camPhoto.getRotation() + 90);
                         Glide.with(context).load(m.getURL()).into(camPhoto);
                         settingsDialog.show();
                     }

@@ -1,26 +1,38 @@
 package com.example.dickson.anonymask;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +40,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +65,7 @@ public class lecMain extends AppCompatActivity {
     private ArrayList<String> keyList; // list of message keys from Firebase
     private CustomAdapter msgAdapter;
     private CustomAdapter topAdapter;
+    private Toolbar lecTool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +78,12 @@ public class lecMain extends AppCompatActivity {
         if (b != null) {
             roomNum = (int) b.get("roomNum");
         }
+        lecTool = (Toolbar) findViewById(R.id.lecTool);
+        setSupportActionBar(lecTool);
+
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(Integer.toString(roomNum));
 
         TextView displayRoom = (TextView) findViewById(R.id.displayNum);
         displayRoom.setTextColor(Color.parseColor("#EAEDED"));
@@ -71,12 +92,87 @@ public class lecMain extends AppCompatActivity {
         topList = new ArrayList<Message>();
         topAdapter = new CustomAdapter(topList, this);
 
-        sortBtn = (Button) findViewById(R.id.sortBtn);
+//        sortBtn = (Button) findViewById(R.id.sortBtn);
+//
+//        // Sort Btn
+//        sortBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final BottomSheetDialog dialog = new BottomSheetDialog(lecMain.this);
+//                View tempView = getLayoutInflater().inflate(R.layout.dialog, null);
+//                dialog.setContentView(tempView);
+//                ((View) tempView.getParent()).setBackgroundColor(getResources().getColor(R.color.cardview_shadow_start_color));
+//
+//                Button topBtn = (Button) tempView.findViewById(R.id.topBtn);
+//                Button recBtn = (Button) tempView.findViewById(R.id.recBtn);
+//
+//                // if the Top Btn is clicked, the listview will be populated with toplist
+//                topBtn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        lv.setAdapter(topAdapter);
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                // if the Recent Btn is clicked, the listview will be populated with messageList
+//                recBtn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        lv.setAdapter(msgAdapter);
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                dialog.show();
+//            }
+//        });
 
-        // Sort Btn
-        sortBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        lv = (ListView) findViewById(R.id.list_of_message);
+        displayMessage();
+
+//        endBtn = (Button) findViewById(R.id.endBtn);
+//
+//        // End Session Btn
+//        // Removes the entire room from Firebase and exit the page
+//        endBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final AlertDialog.Builder builder = new AlertDialog.Builder(lecMain.this);
+//                builder.setMessage("End session?");
+//
+//                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        ref.child("Room").child(Integer.toString(roomNum)).removeValue();
+//                        finish();
+//                    }
+//                });
+//
+//
+//                AlertDialog alert = builder.create();
+//                alert.show();
+//            }
+//        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_lec, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.sortBtn:
                 final BottomSheetDialog dialog = new BottomSheetDialog(lecMain.this);
                 View tempView = getLayoutInflater().inflate(R.layout.dialog, null);
                 dialog.setContentView(tempView);
@@ -104,24 +200,36 @@ public class lecMain extends AppCompatActivity {
                 });
 
                 dialog.show();
-            }
-        });
 
-        lv = (ListView) findViewById(R.id.list_of_message);
-        displayMessage();
+                return true;
 
-        endBtn = (Button) findViewById(R.id.endBtn);
+            case R.id.endBtn:
+                final AlertDialog.Builder builder = new AlertDialog.Builder(lecMain.this);
+                builder.setMessage("End Session?");
 
-        // End Session Btn
-        // Removes the entire room from Firebase and exit the page
-        endBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ref.child("Room").child(Integer.toString(roomNum)).removeValue();
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ref.child("Room").child(Integer.toString(roomNum)).removeValue();
+                        finish();
+                    }
+                });
 
-                finish();
-            }
-        });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     // Main method that displays the message on the ListView
@@ -163,6 +271,16 @@ public class lecMain extends AppCompatActivity {
                 int tempIdx = keyList.indexOf(dataSnapshot.getKey());
                 keyList.remove(dataSnapshot.getKey());
                 messageList.remove(tempIdx);
+
+                topList.clear();
+                for(Message m : messageList){
+                    topList.add(m);
+                }
+                Collections.sort(topList, new Comparator<Message>(){public int compare(Message m1, Message m2){
+                    return m1.getUpVote() > m2.getUpVote() ? -1 : m1.getUpVote() < m2.getUpVote() ? 1 : 0;}
+                });
+
+                topAdapter.notifyDataSetChanged();
                 msgAdapter.notifyDataSetChanged();
             }
 

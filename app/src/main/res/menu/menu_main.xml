@@ -3,12 +3,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/selectBtn"
-        android:title="SELECT ALL"
-        app:showAsAction="always" />
+
     <item
         android:id="@+id/removeBtn"
-        android:title="REMOVE SELECTED"
-        app:showAsAction="always" />
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="Item"
+        app:showAsAction="ifRoom|collapseActionView" />
 </menu>

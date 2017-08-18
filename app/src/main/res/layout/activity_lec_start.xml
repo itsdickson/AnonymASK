@@ -12,9 +12,9 @@
         android:id="@+id/codeTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/lecTool"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="159dp"
+        android:layout_marginTop="150dp"
         android:text="CODE"
         android:textSize="36sp" />
 
@@ -22,10 +22,27 @@
         android:id="@+id/genBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Generate"
-        android:layout_marginTop="24dp"
-        android:layout_below="@+id/numText"
-        android:layout_alignStart="@+id/codeTxt" />
+        android:layout_alignStart="@+id/codeTxt"
+        android:layout_below="@+id/codeTxt"
+        android:layout_marginTop="34dp"
+        android:text="Generate" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/lecTool"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" >
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/member_306697" />
+    </android.support.v7.widget.Toolbar>
 
     <TextView
         android:id="@+id/numText"
@@ -35,6 +52,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="29dp"
         android:text="Number"
-        android:textSize="36sp" />
+        android:textSize="36sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

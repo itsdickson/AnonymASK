@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/sortBtn"
+        android:title="Sort"
+        app:showAsAction="ifRoom|collapseActionView" />
+    <item
+        android:id="@+id/endBtn"
+        android:title="End"
+        app:showAsAction="ifRoom|collapseActionView" />
+</menu>

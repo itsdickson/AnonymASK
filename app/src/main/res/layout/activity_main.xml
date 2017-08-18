@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background ="@drawable/mainpage"
     tools:context="com.example.dickson.anonymask.MainActivity">
+
+    <!--android:background ="@drawable/mainpage"-->
 
     <TextView
         android:id="@+id/startTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/imageView2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="135dp"
+        android:layout_marginTop="40dp"
         android:fontFamily="casual"
         android:text="ARE YOU A.."
         android:textColor="#ffffff"
@@ -23,11 +24,12 @@
     <Button
         android:id="@+id/stuBtn"
         android:layout_width="135dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/lecBtn"
         android:layout_below="@+id/startTxt"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
         android:fontFamily="casual"
+        android:gravity="center"
         android:text="student"
         android:textSize="17sp"
         android:textStyle="bold" />
@@ -35,11 +37,12 @@
     <Button
         android:id="@+id/lecBtn"
         android:layout_width="135dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_below="@+id/stuBtn"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
         android:fontFamily="casual"
+        android:gravity="center"
         android:text="lecturer"
         android:textSize="17sp"
         android:textStyle="bold" />
@@ -47,12 +50,23 @@
     <Button
         android:id="@+id/modBtn"
         android:layout_width="135dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_below="@+id/lecBtn"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"
+        android:layout_margin="45dp"
+        android:layout_marginBottom="35dp"
         android:fontFamily="casual"
+        android:gravity="center"
         android:text="moderator"
         android:textSize="17sp"
         android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp"
+        app:srcCompat="@drawable/start_logo" />
 </RelativeLayout>

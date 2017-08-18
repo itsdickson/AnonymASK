@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-feature android:name="android.hardware.screen.portrait" />
 
     <application
         android:allowBackup="true"
@@ -24,12 +25,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".stuStart" />
-        <activity android:name=".stuMain" />
-        <activity android:name=".lecStart" />
-        <activity android:name=".lecMain" />
-        <activity android:name=".modStart" />
-        <activity android:name=".modMain"></activity>
+        <activity android:name=".stuStart"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".stuMain"
+            android:parentActivityName=".stuStart"/>
+        <activity android:name=".lecStart"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".lecMain"
+            android:parentActivityName=".lecStart"/>
+        <activity android:name=".modStart"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".modMain"
+            android:parentActivityName=".modStart"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
