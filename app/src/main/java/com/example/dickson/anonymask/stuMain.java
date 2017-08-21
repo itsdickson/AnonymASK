@@ -184,7 +184,7 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
 
                 // Splits the question based on their spaces so as to check if profanities exist
                 // for each word
-                String temp = qnET.getText().toString();
+                String temp = qnET.getText().toString().toLowerCase();
                 String [] separated = temp.split(" ");
 //                String[] words = temp.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 
@@ -337,8 +337,6 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
                         msgAdapter.notifyDataSetChanged();
                     }
                 });
-
-                Toast.makeText(stuMain.this, "Upvoted!", Toast.LENGTH_SHORT).show();
             }
 
             else {
@@ -367,7 +365,6 @@ public class stuMain extends AppCompatActivity implements android.widget.Compoun
                         msgAdapter.notifyDataSetChanged();
                     }
                 });
-                Toast.makeText(stuMain.this, "Downvoted!", Toast.LENGTH_SHORT).show();
             }
         }
     }

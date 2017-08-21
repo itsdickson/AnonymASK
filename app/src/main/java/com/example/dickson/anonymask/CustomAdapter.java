@@ -178,8 +178,8 @@ public class CustomAdapter extends ArrayAdapter<Message> {
             stuHolder.stuView2.setText("" + m.getUpVote());
             System.out.println("upvotes = " + m.getUpVote());
             stuHolder.stuBox.setButtonDrawable(R.drawable.customthumbsup);
-//            stuHolder.stuBox.setChecked(isVoted);
-            System.out.println(stuHolder.stuBox.isChecked());
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) stuHolder.stuBox.getLayoutParams();
+            params.setMargins(0, 5, 0, 0);
 
             if (stuHolder.stuBox.isChecked()){
                 stuHolder.stuView2.setText("" + m.getUpVote());
